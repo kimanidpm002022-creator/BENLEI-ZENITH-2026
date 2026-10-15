@@ -1,22 +1,27 @@
-# UzaPoint Clone
+# Leisen
 
-Starter Next.js + TypeScript + Tailwind project scaffolded by Copilot.
+Leisen is a business software landing page for procurement, sales, and accounting operations.
 
-Getting started
+## Stack
 
-1. Install dependencies:
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Prisma-ready data layer
 
-   npm install
+## Run locally
 
-2. Create a .env file (see .env.example) with your DATABASE_URL and NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY etc.
+```bash
+npm install
+npm run dev
+```
 
-3. Run the dev server:
+## Demo focus
 
-   npm run dev
+- Procurement workflow: vendor onboarding, purchase orders, approvals, spend visibility
+- Sales workflow: CRM pipeline, quotation management, order fulfillment
+- Accounting workflow: invoicing, vendor bills, journal entries, financial reports
 
-Seeding (uses Prisma)
+## Notes
 
-1. Set DATABASE_URL in .env
-2. Run: npx prisma migrate dev --name init
-3. Seed: npm run seed
-
+This starter is designed to match a modern B2B SaaS look and can be expanded into a full ERP-style application.
