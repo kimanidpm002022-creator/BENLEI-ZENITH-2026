@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 
 const navItems = [
@@ -9,7 +10,7 @@ const navItems = [
   { href: '/reports', label: 'Reports' },
 ]
 
-export default function AppShell({ title, children }: { title: string; children: React.ReactNode }) {
+export default function AppShell({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800">
       <div className="flex min-h-screen">
