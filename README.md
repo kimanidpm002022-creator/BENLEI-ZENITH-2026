@@ -1,22 +1,30 @@
-# UzaPoint Clone
+# UzaPoint Clone — Procurement, Sales & Accounting Scaffold
 
-Starter Next.js + TypeScript + Tailwind project scaffolded by Copilot.
+This repository was updated to focus on procurement, sales, and accounting workflows.
 
-Getting started
+What's in this update
+
+- Prisma schema expanded with models for Vendors, Customers, Purchase Orders, Sales Orders, Invoices, Accounting accounts and Journal Entries, and Inventory transactions.
+- Seed script that inserts demo vendors, customers, products, a purchase order, a sales order, an invoice, and example journal entries.
+- High-level SPEC.md describing core features, data model, and planned API endpoints.
+
+Quick start
 
 1. Install dependencies:
-
    npm install
 
-2. Create a .env file (see .env.example) with your DATABASE_URL and NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY etc.
+2. Copy .env.example to .env and set DATABASE_URL
 
-3. Run the dev server:
+3. Run Prisma migrate and seed:
+   npx prisma migrate dev --name init
+   npm run seed
 
+4. Run dev server:
    npm run dev
 
-Seeding (uses Prisma)
+Next steps I can take (pick one):
+- Build UI pages for: Products, Vendors, Purchase Orders, Sales Orders, Invoices, Accounting (journal, chart of accounts, trial balance)
+- Implement auth and role-based access (admin, purchaser, salesperson, accountant)
+- Add CSV import/export and basic reports (sales by period, outstanding payables/receivables, inventory valuation)
 
-1. Set DATABASE_URL in .env
-2. Run: npx prisma migrate dev --name init
-3. Seed: npm run seed
-
+If you'd like me to continue, tell me which features to prioritize and whether you have specific accounting rules (accrual vs cash, tax rules, local currency/multi-currency).
