@@ -1,150 +1,58 @@
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+import prismaClient from '../lib/prisma'
 
 async function main() {
-  // Create Chart of Accounts
-  const cash = await prisma.accountingAccount.upsert({
-    where: { code: '1000' },
-    update: {},
-    create: { code: '1000', name: 'Cash', type: 'Asset' }
-  })
+  const prisma = prismaClient
 
-  const ar = await prisma.accountingAccount.upsert({
-    where: { code: '1100' },
-    update: {},
-    create: { code: '1100', name: 'Accounts Receivable', type: 'Asset' }
-  })
+  // Create admin user if not exists
+  const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@example.com'
+  const existing = await prisma.user.findUnique({ where: { email: adminEmail } })
+  if (!existing) {
+    const user = await prisma.user.create({
+      data: {
+        email: adminEmail,
+        name: 'Admin',
+        role: 'ADMIN',
+      },
+    })
+    console.log('Created admin user:', user.email)
+  } else {
+    console.log('Admin user already exists:', existing.email)
+  }
 
-  const ap = await prisma.accountingAccount.upsert({
-    where: { code: '2000' },
-    update: {},
-    create: { code: '2000', name: 'Accounts Payable', type: 'Liability' }
-  })
+  // Sample products
+  const products = [
+    { name: 'Demo Product A', sku: 'PROD-A', priceCents: 999, currency: 'USD' },
+    { name: 'Demo Product B', sku: 'PROD-B', priceCents: 499, currency: 'USD' },
+  ]
 
-  const salesAcc = await prisma.accountingAccount.upsert({
-    where: { code: '4000' },
-    update: {},
-    create: { code: '4000', name: 'Sales Revenue', type: 'Income' }
-  })
+  for (const p of products) {
+    await prisma.product.upsert({
+      where: { sku: p.sku },
+      update: {},
+      create: p,
+    })
+  }
 
-  const cogs = await prisma.accountingAccount.upsert({
-    where: { code: '5000' },
-    update: {},
-    create: { code: '5000', name: 'Cost of Goods Sold', type: 'Expense' }
-  })
+  // Sample vendors
+  const vendors = [
+    { name: 'Demo Vendor 1', email: 'vendor1@example.com', phone: '555-0100' },
+    { name: 'Demo Vendor 2', email: 'vendor2@example.com', phone: '555-0101' },
+  ]
 
-  // Vendors & Customers
-  const vendor = await prisma.vendor.upsert({
-    where: { name: 'Acme Supplies' },
-    update: {},
-    create: { name: 'Acme Supplies', email: 'sales@acme.example.com' }
-  })
+  for (const v of vendors) {
+    await prisma.vendor.upsert({
+      where: { name: v.name },
+      update: {},
+      create: v,
+    })
+  }
 
-  const customer = await prisma.customer.upsert({
-    where: { name: 'Beta Corp' },
-    update: {},
-    create: { name: 'Beta Corp', email: 'acct@beta.example.com' }
-  })
-
-  // Products
-  const prod1 = await prisma.product.upsert({
-    where: { sku: 'PROD-001' },
-    update: {},
-    create: {
-      sku: 'PROD-001',
-      name: 'Widget A',
-      description: 'Standard widget',
-      unitPrice: 20.0,
-      cost: 12.0,
-      currency: 'USD',
-      stock: 50
-    }
-  })
-
-  const prod2 = await prisma.product.upsert({
-    where: { sku: 'PROD-002' },
-    update: {},
-    create: {
-      sku: 'PROD-002',
-      name: 'Widget B',
-      description: 'Advanced widget',
-      unitPrice: 45.0,
-      cost: 30.0,
-      currency: 'USD',
-      stock: 20
-    }
-  })
-
-  // Purchase Order
-  const po = await prisma.purchaseOrder.create({
-    data: {
-      vendorId: vendor.id,
-      number: 'PO-1001',
-      status: 'open',
-      currency: 'USD',
-      total: 360.0,
-      lines: {
-        create: [
-          { productId: prod1.id, quantity: 10, unitPrice: 12.0 },
-          { productId: prod2.id, quantity: 8, unitPrice: 30.0 }
-        ]
-      }
-    },
-    include: { lines: true }
-  })
-
-  // Sales Order
-  const so = await prisma.salesOrder.create({
-    data: {
-      customerId: customer.id,
-      number: 'SO-2001',
-      status: 'confirmed',
-      currency: 'USD',
-      total: 130.0,
-      lines: {
-        create: [
-          { productId: prod1.id, quantity: 2, unitPrice: 20.0 },
-          { productId: prod2.id, quantity: 1, unitPrice: 45.0 }
-        ]
-      }
-    },
-    include: { lines: true }
-  })
-
-  // Invoice for sales order (customer invoice)
-  const invoice = await prisma.invoice.create({
-    data: {
-      number: 'INV-3001',
-      type: 'customer',
-      referenceId: so.id,
-      partyId: customer.id,
-      total: so.total,
-      currency: 'USD',
-      status: 'issued',
-      lines: {
-        create: so.lines.map(l => ({ productId: l.productId, quantity: l.quantity, unitPrice: l.unitPrice }))
-      }
-    },
-    include: { lines: true }
-  })
-
-  // Example Journal Entry: record sale (debit AR, credit Sales)
-  const je = await prisma.journalEntry.create({
-    data: {
-      memo: `Record sale ${invoice.number}`,
-      lines: {
-        create: [
-          { accountId: ar.id, debit: invoice.total, credit: 0 },
-          { accountId: salesAcc.id, debit: 0, credit: invoice.total }
-        ]
-      }
-    },
-    include: { lines: true }
-  })
-
-  console.log('Seeding complete')
+  console.log('Seed complete')
 }
 
 main()
-  .catch(e => { console.error(e); process.exit(1) })
-  .finally(async () => { await prisma.$disconnect() })
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(() => prismaClient.$disconnect())
