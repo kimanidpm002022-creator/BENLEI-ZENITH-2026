@@ -1,6 +1,6 @@
-# UzaPoint Clone — Procurement, Sales & Accounting Scaffold
+# BenLei Zenith 2026 — Procurement, Sales & Accounting Scaffold
 
-This repository was updated to focus on procurement, sales, and accounting workflows.
+This repository is the BenLei Zenith 2026 scaffold focused on procurement, sales, and accounting workflows.
 
 What's in this update
 

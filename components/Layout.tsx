@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
         <div className="max-w-6xl mx-auto p-4 flex justify-between items-center">
-          <Link href="/"><a className="font-bold">UzaPoint Clone</a></Link>
+          <Link href="/"><a className="font-bold">BenLei Zenith 2026</a></Link>
           <nav className="space-x-4">
             <Link href="/products"><a className="text-gray-600">Products</a></Link>
             <Link href="/vendors"><a className="text-gray-600">Vendors</a></Link>
